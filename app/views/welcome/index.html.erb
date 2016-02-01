@@ -1,0 +1,30 @@
+<div class="welcome">
+  <div class="alert alert-danger" role="alert">
+    <%= textilizable Setting.welcome_text %>
+  </div>
+  <% if @projects %>
+      <div class="row projects">
+        <% @projects.each do |project| -%>
+            <%= link_to(:controller => 'issues', :action => 'index', :project_id => project) do %>
+                <div class="col-lg-3 col-sm-6 col-xs-6 col-xxs-12">
+                  <div class="smallstat">
+                    <div class="pull-left bg-primary m-r-1">
+                      <%= project_logo(project) %>
+                    </div>
+                    <div class="title">
+                      <%= project.name %>
+                    </div>
+                  </div>
+                </div>
+            <% end %>
+        <% end -%>
+      </div>
+  <% end %>
+
+  <% content_for :header_tags do %>
+      <%= auto_discovery_link_tag(:atom, {:controller => 'news', :action => 'index', :key => User.current.rss_key, :format => 'atom'},
+                                  :title => "#{Setting.app_title}: #{l(:label_news_latest)}") %>
+      <%= auto_discovery_link_tag(:atom, {:controller => 'activities', :action => 'index', :key => User.current.rss_key, :format => 'atom'},
+                                  :title => "#{Setting.app_title}: #{l(:label_activity)}") %>
+  <% end %>
+</div>

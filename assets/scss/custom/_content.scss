@@ -1,0 +1,102 @@
+#nav {
+  .dropdown-toggle{
+    background-color: transparent;
+    border: 0;
+    .gravatar{
+      border-radius: 50em
+    }
+  }
+}
+
+.sidebar {
+  display: block;
+  padding: 20px;
+  overflow-x: hidden;
+  overflow-y: auto;
+  border-left: 1px solid $gray;
+  background-color: $gray-lighter;
+}
+
+.main {
+  padding: 20px;
+  .body-content{
+    background-color: white;
+  }
+}
+
+.smallstat{
+  position: relative;
+  height: 80px;
+  background-color: $gray-lighter;
+  margin-bottom: .75rem;
+
+  .title{
+    font-size: $font-size-base;
+    display: table-cell;
+    vertical-align: middle;
+    height: 80px;
+    color:darken($brand-info,20%);
+  }
+
+}
+
+.welcome{
+  .col-lg-3, .col-sm-6, .col-xs-6, .col-xxs-12{
+    padding-left: 0;
+  }
+  .projects{
+    margin-left: 0;
+  }
+}
+
+.thead-inverse{
+  a{
+    color: #FFF;
+  }
+}
+
+.required{
+  color: $brand-danger;
+}
+
+.contextual{
+  float: right !important;
+}
+
+#query_form_content{
+  a{
+    color:#fff;
+  }
+}
+
+.attributes{
+  .list-group-item {
+    > div {
+      display: inline-block;
+    }
+  }
+}
+
+.inline-block{
+  > div {
+    display: inline-block;
+  }
+  > label {
+    display: inline-block;
+  }
+
+  .form-control{
+    width: inherit;
+    display: inline-block;
+  }
+}
+
+label{
+  font-weight: bold;
+}
+
+#attachments_fields{
+input{
+  display: block;
+}
+}

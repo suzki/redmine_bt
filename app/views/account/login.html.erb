@@ -1,0 +1,53 @@
+<%= call_hook :view_account_login_top %>
+
+<div class="card member_signin">
+  <div class="card-block">
+    <div class="fa_user">
+      <i class="fa fa-user"></i>
+    </div>
+    <div class="member">Iniciar Sesión</div>
+    <%= form_tag(signin_path, onsubmit: 'return keepAnchorOnSignIn(this);') do %>
+        <%= back_url_hidden_field_tag %>
+        <div class="form-group">
+          <label for="exampleInputEmail1" class="sr-only">Email address</label>
+          <%= text_field_tag 'username', nil, :placeholder => l(:field_login), :tabindex => '1', :class => "form-control" %>
+        </div>
+        <div class="form-group">
+          <label for="exampleInputPassword1" class="sr-only">Password</label>
+          <%= password_field_tag 'password', nil, :placeholder => l(:field_password), :tabindex => '2', :class => "form-control" %>
+        </div>
+        <% if Setting.openid? %>
+            <div class="control-group">
+              <label for="openid_url"><%= l(:field_identity_url) %></label>
+
+              <div class="controls">
+                <%= text_field_tag "openid_url", nil, :tabindex => '3' %>
+              </div>
+            </div>
+        <% end %>
+
+        <div class="checkbox">
+          <% if Setting.autologin? %>
+              <label for="autologin"><%= check_box_tag 'autologin', 1, false, :tabindex => 4 %> <%= l(:label_stay_logged_in) %></label>
+          <% end %>
+
+        </div>
+        <button type="submit" type="button" class="btn btn-primary btn-md login"><%= l(:button_login) %></button>
+    <% end %>
+    <% if Setting.lost_password? %>
+        <%= link_to l(:label_password_lost), lost_password_path, :class => "small" %>
+        </p>
+    <% end %>
+
+  </div>
+</div>
+
+
+
+<%= call_hook :view_account_login_bottom %>
+
+<% if params[:username].present? %>
+    <%= javascript_tag "$('#password').focus();" %>
+<% else %>
+    <%= javascript_tag "$('#username').focus();" %>
+<% end %>

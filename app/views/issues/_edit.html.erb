@@ -1,0 +1,100 @@
+<%= labelled_form_for @issue, :html => {:id => 'issue-form', :multipart => true} do |f| %>
+    <%= error_messages_for 'issue', 'time_entry' %>
+    <%= render :partial => 'conflict' if @conflict %>
+    <div class="box">
+      <% if @issue.attributes_editable? %>
+          <fieldset class="tabular">
+            <legend><%= l(:label_change_properties) %></legend>
+            <div id="all_attributes">
+              <%= render :partial => 'form', :locals => {:f => f} %>
+            </div>
+          </fieldset>
+      <% end %>
+
+
+      <ul class="nav nav-tabs" role="tablist">
+        <% if User.current.allowed_to?(:log_time, @project) %>
+            <li class="nav-item">
+              <a class="nav-link active" data-toggle="tab" href="#entry-time-count" role="tab"><%= l(:button_log_time) %></a>
+            </li>
+        <% end %>
+
+        <li class="nav-item">
+          <a class="nav-link  <% if not User.current.allowed_to?(:log_time, @project) %>active
+          <% end %>" data-toggle="tab" href="#note-cont" role="tab"><%= l(:field_notes) %></a>
+        </li>
+
+        <li class="nav-item">
+          <a class="nav-link" data-toggle="tab" href="#files-cont" role="tab"><%= l(:label_attachment_plural) %></a>
+        </li>
+
+      </ul>
+
+      <div class="tab-content m-b-1 m-t-1">
+        <% if User.current.allowed_to?(:log_time, @project) %>
+            <div id="entry-time-count" class="tab-pane active" role="tabpanel">
+              <div class="card card-block bg-faded">
+              <%= labelled_fields_for :time_entry, @time_entry do |time_entry| %>
+                  <div class="row">
+                    <div class="col-lg-6 inline-block">
+                      <label class="control-label">
+                        <%= l(:label_spent_time) %>
+                      </label>
+                      <%= time_entry.text_field :hours, :size => 6, :class => "form-control", :no_label => true %> <%= l(:field_hours) %>
+                    </div>
+                    <div class="col-lg-6 inline-block">
+                      <label class="control-label">
+                        <%= l(:label_activity) %>
+                      </label>
+                      <%= time_entry.select :activity_id,
+                                            activity_collection_for_select_options,
+                                            {:no_label => true},
+                                            :class => "form-control"
+                      %>
+                    </div>
+                  </div>
+                  <div class="">
+                    <label class="control-label">
+                      <%= l(:label_comment) %>
+                    </label>
+                    <%= time_entry.text_field :comments, :size => 60, :class => "form-control", :no_label => true %>
+                  </div>
+                  <% @time_entry.custom_field_values.each do |value| %>
+                      <%= custom_field_tag_with_label :time_entry, value %>
+                  <% end %>
+              <% end %>
+                </div>
+            </div>
+        <% end %>
+
+        <div id="note-cont" class="tab-pane
+          <% if not User.current.allowed_to?(:log_time, @project) %>active
+          <% end %>" role="tabpanel">
+          <div class="card card-block bg-faded">
+          <%= f.text_area :notes, :cols => 60, :rows => 10, :class => 'wiki-edit form-control', :no_label => true %>
+          <%= wikitoolbar_for 'issue_notes' %>
+
+          <% if @issue.safe_attribute? 'private_notes' %>
+              <%= f.check_box :private_notes, :no_label => true %>
+              <label for="issue_private_notes"><%= l(:field_private_notes) %></label>
+          <% end %>
+
+          <%= call_hook(:view_issues_edit_notes_bottom, {:issue => @issue, :notes => @notes, :form => f}) %>
+            </div>
+        </div>
+
+        <div id="files-cont" class="tab-pane" role="tabpanel">
+          <div class="card card-block bg-faded">
+          <%= render :partial => 'attachments/form', :locals => {:container => @issue} %>
+            </div>
+        </div>
+      </div>
+    </div>
+    <%= f.hidden_field :lock_version %>
+    <%= hidden_field_tag 'last_journal_id', params[:last_journal_id] || @issue.last_journal_id %>
+    <button type="submit" name="commit" class="btn btn-success"><%= label_with_icon(l(:button_submit), 'fa fa-save') %></button>
+    <%= preview_link preview_new_issue_path(:project_id => @issue.project), 'issue-form', target='preview', :class => 'btn btn-warning' %>
+    <%= link_to label_with_icon(l(:button_cancel), 'fa fa-close'), {}, :onclick => "$('#update').hide(); return false;", :class => 'btn btn-danger' %>
+<% end %>
+
+<div id="preview" class="wiki"></div>

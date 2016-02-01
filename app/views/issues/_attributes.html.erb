@@ -1,0 +1,135 @@
+<%= labelled_fields_for :issue, @issue do |f| %>
+
+    <div class="row">
+      <div class="col-lg-6 col-md-6">
+        <% if @issue.safe_attribute?('status_id') && @allowed_statuses.present? %>
+            <div class="form-group">
+
+              <label class="control-label">
+                <%= l(:field_status) %><span class="required"> *</span>
+              </label>
+
+              <%= f.select :status_id, (@allowed_statuses.collect { |p| [p.name, p.id] }),
+                           {:required => true , :no_label => true},
+                            :onchange => "updateIssueFrom('#{escape_javascript update_issue_form_path(@project, @issue)}', this)",
+                           :class => "form-control"
+              %>
+            </div>
+            <%= hidden_field_tag 'was_default_status', @issue.status_id, :id => nil if @issue.status == @issue.default_status %>
+        <% else %>
+            <div><label><%= l(:field_status) %></label> <%= @issue.status %></div>
+        <% end %>
+
+        <% if @issue.safe_attribute? 'priority_id' %>
+            <div class="form-group">
+              <label class="control-label">
+                <%= l(:field_priority) %><span class="required"> *</span>
+              </label>
+              <%= f.select :priority_id, (@priorities.collect { |p| [p.name, p.id] }),
+                           {:required => true,:no_label => true},
+                           :class => "form-control" %>
+            </div>
+        <% end %>
+
+        <% if @issue.safe_attribute? 'assigned_to_id' %>
+            <div class="form-group">
+              <label class="control-label">
+                <%= l(:field_assigned_to) %><% if @issue.required_attribute?('assigned_to_id') %><span class="required"> *</span><% end %>
+              </label>
+              <%= f.select :assigned_to_id, principals_options_for_select(@issue.assignable_users, @issue.assigned_to),
+                           {:include_blank => true,
+                           :required => @issue.required_attribute?('assigned_to_id'),
+                           :no_label => true},
+                           :class => "form-control"%>
+            </div>
+        <% end %>
+
+        <% if @issue.safe_attribute?('category_id') && @issue.project.issue_categories.any? %>
+            <div class="">
+              <%= f.select :category_id, (@issue.project.issue_categories.collect { |c| [c.name, c.id] }), :include_blank => true, :required => @issue.required_attribute?('category_id') %>
+              <%= link_to(image_tag('add.png', :style => 'vertical-align: middle;'),
+                          new_project_issue_category_path(@issue.project),
+                          :remote => true,
+                          :method => 'get',
+                          :title => l(:label_issue_category_new),
+                          :tabindex => 200) if User.current.allowed_to?(:manage_categories, @issue.project) %>
+            </div>
+        <% end %>
+
+        <% if @issue.safe_attribute?('fixed_version_id') && @issue.assignable_versions.any? %>
+            <div>
+              <%= f.select :fixed_version_id, version_options_for_select(@issue.assignable_versions, @issue.fixed_version), :include_blank => true, :required => @issue.required_attribute?('fixed_version_id') %>
+              <%= link_to(image_tag('add.png', :style => 'vertical-align: middle;'),
+                          new_project_version_path(@issue.project),
+                          :remote => true,
+                          :method => 'get',
+                          :title => l(:label_version_new),
+                          :tabindex => 200) if User.current.allowed_to?(:manage_versions, @issue.project) %>
+            </div>
+        <% end %>
+      </div>
+
+      <div class="col-lg-6 col-md-6">
+        <% if @issue.safe_attribute? 'parent_issue_id' %>
+            <div id="parent_issue" class="form-group">
+              <label class="control-label">
+                <%= l(:field_parent_issue) %><% if @issue.required_attribute?('parent_issue_id') %><span class="required"> *</span><% end %>
+              </label>
+              <%= f.text_field :parent_issue_id, :required => @issue.required_attribute?('parent_issue_id'),:no_label => true,:class => "form-control" %>
+
+            <%= javascript_tag "observeAutocompleteField('issue_parent_issue_id', '#{escape_javascript auto_complete_issues_path(:project_id => @issue.project, :scope => Setting.cross_project_subtasks)}')" %>
+            </div>
+        <% end %>
+
+        <% if @issue.safe_attribute? 'start_date' %>
+            <div id="start_date_area" class="form-group">
+              <label class="control-label">
+                <%= l(:field_start_date) %><% if @issue.required_attribute?('start_date') %><span class="required"> *</span><% end %>
+              </label>
+              <%= f.text_field(:start_date, :size => 10, :required => @issue.required_attribute?('start_date'),:class => "form-control",:no_label => true)  %>
+              <%= calendar_for('issue_start_date') if @issue.leaf? %>
+            </div>
+        <% end %>
+
+        <% if @issue.safe_attribute? 'due_date' %>
+            <div id="due_date_area" class="form-group">
+              <label class="control-label">
+                <%= l(:field_due_date) %><% if @issue.required_attribute?('due_date') %><span class="required"> *</span><% end %>
+              </label>
+              <%= f.text_field(:due_date, :size => 10, :required => @issue.required_attribute?('due_date'),:class => "form-control",:no_label => true) %>
+              <%= calendar_for('issue_due_date') if @issue.leaf? %>
+            </div>
+        <% end %>
+
+        <% if @issue.safe_attribute? 'estimated_hours' %>
+            <div class="form-group">
+              <label class="control-label">
+                <%= l(:field_estimated_hours) %><% if @issue.required_attribute?('estimated_hours') %><span class="required"> *</span><% end %>
+              </label>
+              <div class="input-group">
+                <%= f.text_field :estimated_hours, :size => 3, :required => @issue.required_attribute?('estimated_hours'),:class => "form-control",:no_label => true %>
+                <div class="input-group-addon"><%= l(:field_hours) %></div>
+              </div>
+            </div>
+        <% end %>
+
+        <% if @issue.safe_attribute?('done_ratio') && Issue.use_field_for_done_ratio? %>
+            <div class="form-group">
+              <label class="control-label">
+                <%= l(:field_done_ratio) %><% if @issue.required_attribute?('done_ratio') %><span class="required"> *</span><% end %>
+              </label>
+              <%= f.select :done_ratio, ((0..10).to_a.collect { |r| ["#{r*10} %", r*10] }),
+                           {:required => @issue.required_attribute?('done_ratio'),:no_label => true},
+                           :class => "form-control" %>
+            </div>
+        <% end %>
+      </div>
+    </div>
+
+    <% if @issue.safe_attribute? 'custom_field_values' %>
+        <%= render :partial => 'issues/form_custom_fields' %>
+    <% end %>
+
+<% end %>
+
+<% include_calendar_headers_tags_bt %>

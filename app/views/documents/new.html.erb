@@ -1,0 +1,6 @@
+<h2><%=l(:label_document_new)%></h2>
+
+<%= labelled_form_for @document, :url => project_documents_path(@project), :html => {:multipart => true} do |f| %>
+  <%= render :partial => 'form', :locals => {:f => f} %>
+  <button type="submit" name="commit" class="btn btn-success"><%= label_with_icon(l(:button_create),'fa fa-save') %></button>
+<% end %>

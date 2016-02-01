@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="<%= current_language %>">
+<head>
+  <meta charset="utf-8"/>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+  <title><%= html_title %></title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="<%= Redmine::Info.app_name %>"/>
+  <meta name="keywords" content="issue,bug,tracker"/>
+  <%= csrf_meta_tag %>
+  <%= favicon %>
+  <%= javascript_heads %>
+  <%= heads_for_theme %>
+  <%= call_hook :view_layouts_base_html_head %>
+  <!-- page specific tags -->
+  <%= yield :header_tags -%>
+</head>
+<body class="<%= body_css_classes %>">
+
+<% if User.current.logged? %>
+    <%= render :partial => 'layouts/header' %>
+    <%= render :partial => 'layouts/content' %>
+<% else %>
+    <%= render :partial => 'layouts/login' %>
+<% end %>
+
+
+<%= call_hook :view_layouts_base_body_bottom %>
+</body>
+</html>

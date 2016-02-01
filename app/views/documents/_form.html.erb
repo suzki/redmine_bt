@@ -1,0 +1,36 @@
+<%= error_messages_for @document %>
+
+<div class="box tabular">
+  <div class="inline-block m-b-1">
+    <label class="control-label">
+      <%= l(:field_category) %><span class="required"> *</span>
+    </label>
+    <%= f.select :category_id, DocumentCategory.active.collect { |c| [c.name, c.id] },
+                 {:required => false, :no_label => true}, :class => "form-control" %>
+  </div>
+
+  <div class="inline-block m-b-1">
+    <label class="control-label">
+      <%= l(:field_title) %><span class="required"> *</span>
+    </label>
+    <%= f.text_field :title, :required => true, :size => 60, :no_label => true, :class => "form-control" %>
+  </div>
+
+  <label class="control-label">
+    <%= l(:field_description) %><span class="required"> *</span>
+  </label>
+  <%= f.text_area :description, :cols => 60, :rows => 15,:no_label => true, :class => 'wiki-edit form-control' %>
+
+  <% @document.custom_field_values.each do |value| %>
+      <%= custom_field_tag_with_label :document, value, :class => "form-control" %>
+  <% end %>
+</div>
+
+<%= wikitoolbar_for 'document_description' %>
+
+<% if @document.new_record? %>
+    <div class="box tabular m-t-1">
+      <label><%= l(:label_attachment_plural) %></label>
+      <%= render :partial => 'attachments/form', :locals => {:container => @document} %>
+    </div>
+<% end %>

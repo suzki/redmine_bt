@@ -1,0 +1,44 @@
+<nav class="navbar navbar-dark bg-info">
+  <button type="button" class="navbar-toggler hidden-sm-up" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+    <span class="sr-only">Toggle navigation</span>
+    <span class="icon-bar"></span>
+    <span class="icon-bar"></span>
+    <span class="icon-bar"></span>
+  </button>
+  <a class="navbar-brand" href="/">
+    <img src="/plugin_assets/redmine_bt/images/redmine_d7.svg" class="" height="30px">
+  </a>
+
+  <div id="nav">
+
+    <%= render_nav :top_menu, "navbar-nav pull-xs-left" %>
+
+    <% if sidebar_content? %>
+        <a class="btn btn-info pull-right" id="btn-sidebar"><i class="fa fa-bars"></i></a>
+    <% end %>
+
+    <% if User.current.logged? %>
+        <div class="dropdown pull-xs-right">
+          <button class="dropdown-toggle" type="button" id="user-menu" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            <%= avatar User.current, :size => "30" %>
+            <%= User.current %>
+          </button>
+          <div class="dropdown-menu" aria-labelledby="user-menu">
+            <%= render_dropdown_menu :account_menu -%>
+          </div>
+        </div>
+    <% end %>
+
+    <%= render_project_dropdown %>
+
+    <% if false && User.current.logged? || !Setting.login_required? %>
+        <div class="pull-xs-right">
+          <%= form_tag({:controller => 'search', :action => 'index', :id => @project}, :method => :get) do %>
+              <%= hidden_field_tag(controller.default_search_scope, 1, :id => nil) if controller.default_search_scope %>
+              <%= text_field_tag 'q', @question, :id => 'flyout-search', :class => 'form-control', :placeholder => l(:label_search) %>
+          <% end %>
+        </div>
+    <% end %>
+
+  </div>
+</nav>

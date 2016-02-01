@@ -1,0 +1,63 @@
+<div class="contextual">
+  <%= link_to label_with_icon(l(:label_document_new), "fa fa-plus"), new_project_document_path(@project), :class => 'btn btn-success',
+              :data => {:toggle => "modal", :target => "#new-document"} if User.current.allowed_to?(:add_documents, @project) %>
+</div>
+
+
+<% if @grouped.empty? %>
+    <div class="nodata alert alert-info"><%= l(:label_no_data) %></div>
+<% end %>
+
+<div class="row">
+  <% @grouped.keys.sort.each do |group| %>
+      <div class="col-sm-6">
+        <div class="card">
+          <div class="card-block bg-info">
+            <h3 class="card-title"><%= group %></h3>
+          </div>
+          <ul class="list-group list-group-flush">
+            <%= render :partial => 'documents/document', :collection => @grouped[group] %>
+          </ul>
+        </div>
+      </div>
+  <% end %>
+</div>
+
+<% content_for :sidebar do %>
+    <h3><%= l(:label_sort_by, '') %></h3>
+    <ul>
+      <li><%= link_to(l(:field_category), {:sort_by => 'category'},
+                      :class => (@sort_by == 'category' ? 'selected' : nil)) %></li>
+      <li><%= link_to(l(:label_date), {:sort_by => 'date'},
+                      :class => (@sort_by == 'date' ? 'selected' : nil)) %></li>
+      <li><%= link_to(l(:field_title), {:sort_by => 'title'},
+                      :class => (@sort_by == 'title' ? 'selected' : nil)) %></li>
+      <li><%= link_to(l(:field_author), {:sort_by => 'author'},
+                      :class => (@sort_by == 'author' ? 'selected' : nil)) %></li>
+    </ul>
+<% end %>
+
+<% html_title(l(:label_document_plural)) -%>
+
+
+<div class="modal fade" id="new-document" tabindex="-1" role="dialog" aria-labelledby="model-label" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+        <h4 class="modal-title" id="model-label"><h2><%= l(:label_document_new) %></h2></h4>
+      </div>
+      <%= labelled_form_for @document, :url => project_documents_path(@project), :html => {:multipart => true} do |f| %>
+          <div class="modal-body">
+            <%= render :partial => 'form', :locals => {:f => f} %>
+          </div>
+          <div class="modal-footer">
+            <button type="submit" name="commit" class="btn btn-success pull-left"><%= label_with_icon(l(:button_create),'fa fa-save') %></button>
+            <button type="button" class="btn btn-danger pull-right" data-dismiss="modal"><%= l(:button_cancel) %></button>
+          </div>
+      <% end %>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->

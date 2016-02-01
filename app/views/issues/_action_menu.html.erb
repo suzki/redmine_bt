@@ -1,0 +1,29 @@
+<div class="contextual pull-right">
+  <%= link_to fa_icon('fa-edit'),
+              edit_issue_path(@issue),
+              :onclick => 'showAndScrollTo("update", "issue_notes"); return false;',
+              :class => 'btn btn-success',
+              :data => {:toggle => "tooltip", :placement => "bottom"},
+              :title => l(:button_edit),
+              :accesskey => accesskey(:edit) if @issue.editable?
+  %>
+  <%= link_to fa_icon('fa-clock-o'),
+              new_issue_time_entry_path(@issue),
+              :data => {:toggle => "tooltip", :placement => "bottom"},
+              :title => l(:button_log_time),
+              :class => 'btn btn-info' if User.current.allowed_to?(:log_time, @project)
+  %>
+  <%= watcher_link(@issue, User.current) %>
+  <%= link_to fa_icon('fa-copy'),
+              project_copy_issue_path(@project, @issue),
+              :data => {:toggle => "tooltip", :placement => "bottom"},
+              :title => l(:button_copy),
+              :class => 'btn btn-primary' if User.current.allowed_to?(:copy_issues, @project) && Issue.allowed_target_projects.any?
+  %>
+  <%= link_to fa_icon('fa-trash'),
+              issue_path(@issue),
+              :data => {:confirm => issues_destroy_confirmation_message(@issue),:toggle => "tooltip", :placement => "bottom"},
+      :title => l(:button_delete),
+              :method => :delete,
+              :class => 'btn btn-danger' if User.current.allowed_to?(:delete_issues, @project) %>
+</div>

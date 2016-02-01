@@ -1,0 +1,91 @@
+<%= labelled_fields_for :issue, @issue do |f| %>
+    <%= call_hook(:view_issues_form_details_top, {:issue => @issue, :form => f}) %>
+    <%= hidden_field_tag 'form_update_triggered_by', '' %>
+
+    <div class="row form-inline m-b-1">
+      <% if @issue.safe_attribute? 'is_private' %>
+          <div class="col-lg-4 col-md-4" id="issue_is_private_wrap">
+            <div class="checkbox">
+            <label for="issue_is_private" id="issue_is_private_label">
+              <%= f.check_box :is_private, :no_label => true %><%= l(:field_is_private) %>
+            </label>
+              </div>
+          </div>
+      <% end %>
+
+      <% if @issue.safe_attribute?('project_id') && (!@issue.new_record? || @project.nil? || @issue.copy?) %>
+          <div class="col-lg-4 col-md-4">
+
+            <div class="form-group">
+              <label class="control-label">
+                <%= l(:field_project) %><span class="required"> *</span>
+              </label>
+
+                <%= f.select :project_id, project_tree_options_for_select(@issue.allowed_target_projects,:selected => @issue.project),
+                             {:required => true, :no_label => true},
+                             :onchange => "updateIssueFrom('#{escape_javascript update_issue_form_path(@project, @issue)}', this)",
+                             :class => "form-control" %>
+            </div>
+
+          </div>
+      <% end %>
+
+      <% if @issue.safe_attribute? 'tracker_id' %>
+          <div class="col-lg-4 col-md-4">
+
+            <div class="form-group">
+              <label class="control-label">
+                <%= l(:field_tracker) %><span class="required"> *</span>
+              </label>
+
+                <%= f.select :tracker_id, @issue.project.trackers.collect { |t| [t.name, t.id] }, {:required => true, :no_label => true},
+                             :onchange => "updateIssueFrom('#{escape_javascript update_issue_form_path(@project, @issue)}', this)",
+                             :class => "form-control" %>
+            </div>
+          </div>
+
+      <% end %>
+
+    </div>
+    <% if @issue.safe_attribute? 'subject' %>
+        <div class="form-inline m-b-1">
+        <label class="control-label">
+          <%= l(:field_subject) %><span class="required"> *</span>
+        </label>
+        <%= f.text_field :subject, :size => 80, :maxlength => 255, :required => true,:no_label => true,:class => "form-control" %>
+        </div>
+    <% end %>
+
+    <% if @issue.safe_attribute? 'description' %>
+        <div class="m-b-1">
+          <%= f.label_for_field :description, :required => @issue.required_attribute?('description') %>
+          <%= link_to_function content_tag(:span, l(:button_edit), :class => 'icon icon-edit'), '$(this).hide(); $("#issue_description_and_toolbar").show()' unless @issue.new_record? %>
+          <%= content_tag 'span', :id => "issue_description_and_toolbar", :style => (@issue.new_record? ? nil : 'display:none') do %>
+              <%= f.text_area :description,
+                              :cols => 60,
+                              :rows => (@issue.description.blank? ? 10 : [[10, @issue.description.length / 50].max, 100].min),
+                              :accesskey => accesskey(:edit),
+                              :class => 'wiki-edit',
+                              :no_label => true,
+                              :class => "form-control"%>
+          <% end %>
+        </div>
+        <%= wikitoolbar_for 'issue_description' %>
+    <% end %>
+
+    <div id="attributes" class="attributes">
+      <%= render :partial => 'issues/attributes' %>
+    </div>
+
+    <%= call_hook(:view_issues_form_details_bottom, {:issue => @issue, :form => f}) %>
+<% end %>
+
+<% heads_for_wiki_formatter %>
+
+<%= javascript_tag do %>
+    $(document).ready(function(){
+    $("#issue_tracker_id, #issue_status_id").each(function(){
+    $(this).val($(this).find("option[selected=selected]").val());
+    });
+    });
+<% end %>

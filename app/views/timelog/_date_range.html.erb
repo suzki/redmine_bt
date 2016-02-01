@@ -1,0 +1,53 @@
+<div id="query_form_with_buttons" class="hide-when-print">
+  <div id="query_form_content" class="row">
+
+    <div class="col-lg-6 col-md-6">
+      <div class="card">
+        <h3 class="card-header bg-info">
+          <a class="" data-toggle="collapse" href="#collapse-filters" aria-expanded="false" aria-controls="collapse-filters">
+            <%= l(:label_filter_plural) %>
+          </a>
+        </h3>
+
+        <div class="collapse card-block <%= @query.new_record? ? " in" : "" %>" id="collapse-filters">
+          <%= render :partial => 'queries/filters', :locals => {:query => @query} %>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-lg-6 col-md-6">
+      <div class="card">
+        <h3 class="card-header bg-warning">
+          <a class="" data-toggle="collapse" href="#collapse-options" aria-expanded="false" aria-controls="collapse-options">
+            <%= l(:label_options) %>
+          </a>
+        </h3>
+
+        <div class="collapse card-block" id="collapse-options">
+          <table>
+            <tr>
+              <td><%= l(:field_column_names) %></td>
+              <td><%= render_query_columns_selection(@query) %></td>
+            </tr>
+          </table>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <p class="buttons">
+    <%= link_to_function label_with_icon(l(:button_apply), 'fa fa-check'), '$("#query_form").submit()', :class => 'btn btn-success' %>
+    <%= link_to label_with_icon(l(:button_clear), 'fa fa-undo'), {:project_id => @project, :issue_id => @issue}, :class => 'btn btn-warning' %>
+  </p>
+</div>
+
+<div class="tabs hide-when-print">
+  <% query_params = params.slice(:f, :op, :v, :sort) %>
+  <ul class="nav nav-tabs m-b-1">
+    <li class="nav-item"><%= link_to(l(:label_details), _time_entries_path(@project, @issue, query_params),
+                    :class =>"nav-link" + (action_name == 'index' ? ' active' : '' )) %></li>
+    <li class="nav-item"><%= link_to(l(:label_report), _report_time_entries_path(@project, @issue, query_params),
+                    :class =>"nav-link" + (action_name == 'report' ? ' active' : '')) %></li>
+  </ul>
+</div>

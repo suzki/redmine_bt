@@ -1,0 +1,61 @@
+<div class="container-fluid bg-faded">
+  <div class="row" class="main-content <%= sidebar_content? ? '' : 'nosidebar' %>">
+    <div id="content" class="col-lg-12 main">
+
+      <% if not current_page?(:controller => 'welcome', :action => 'index') %>
+          <div id="header" class="">
+            <div class="row">
+              <div class="col-lg-12 col-md-12">
+                <h1 class="pull-left"><%= page_header_title %></h1>
+
+                <div class="pull-right">
+                  <% query_params = {:f => ["spent_on", "user_id"],
+                                     :op => {"spent_on" => 't', "user_id" => '='},
+                                     :v => {"user_id" => ['me']}
+                  } %>
+                  <%= link_to(label_with_icon(html_hours(l_hours(redmine_bt_spend_time)), 'fa fa-clock-o'), _time_entries_path(nil, nil, query_params),
+                              :class => 'btn btn-warning') %>
+
+                  <% query_params = {:f => ["spent_on", "user_id"],
+                                     :op => {"spent_on" => 'w', "user_id" => '='},
+                                     :v => {"user_id" => ['me']}
+                  } %>
+                  <%= link_to(label_with_icon(html_hours(l_hours(redmine_bt_spend_time(false))), 'fa fa-calendar'), _time_entries_path(nil, nil, query_params),
+                              :class => 'btn btn-info') %>
+
+
+                  <% if display_main_menu?(@project) %>
+                      <% if @project %>
+                          <a href="/projects/<%= @project.identifier %>/issues/new" class="btn btn-success">
+                            <i class="fa fa-lg fa fa-plus fa-align"></i>
+                          </a>
+                      <% end %>
+                  <% end %>
+                </div>
+              </div>
+            </div>
+
+
+            <% if display_main_menu?(@project) %>
+                <div id="main-menu">
+                  <%= render_main_menu_bt(@project) %>
+                </div>
+            <% end %>
+          </div>
+      <% end %>
+
+      <div class="body-content p-a-1">
+        <%= render_flash_messages %>
+        <%= yield %>
+        <%= call_hook :view_layouts_base_content %>
+      </div>
+    </div>
+
+    <div id="sidebar" class="col-lg-2 sidebar invisible">
+      <%= yield :sidebar %>
+      <%= view_layouts_base_sidebar_hook_response %>
+    </div>
+  </div>
+  <div id="ajax-indicator" style="display:none;"><span><%= l(:label_loading) %></span></div>
+  <div id="ajax-modal" style="display:none;"></div>
+</div>
