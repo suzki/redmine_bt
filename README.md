@@ -11,4 +11,11 @@ git clone https://github.com/ruby232/redmine_bt
 Restart your Redmine web server.
 
 # Screen
-![](https://raw.githubusercontent.com/ruby232/redmine_bt/master/screen.png)
+Home
+![](https://raw.githubusercontent.com/ruby232/redmine_bt/master/home.png)
+New issue
+![](https://raw.githubusercontent.com/ruby232/redmine_bt/master/new_issue.png)
+Edit issue
+![](https://raw.githubusercontent.com/ruby232/redmine_bt/master/edit_issue.png)
+List issue
+![](https://raw.githubusercontent.com/ruby232/redmine_bt/master/list_issue.png)
