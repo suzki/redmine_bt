@@ -16,6 +16,6 @@ Home
 New issue
 ![](https://raw.githubusercontent.com/ruby232/redmine_bt/master/new_issue.png)
 Edit issue
-![](https://raw.githubusercontent.com/ruby232/redmine_bt/master/edit_issue.png)
+![](https://raw.githubusercontent.com/ruby232/redmine_bt/master/edit_ issue.png)
 List issue
 ![](https://raw.githubusercontent.com/ruby232/redmine_bt/master/list_issue.png)
